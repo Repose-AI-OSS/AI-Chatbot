@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mitra - Your Virtual Friend</title>
+    <title>Amicus - Your Virtual Friend</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -12,36 +14,45 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Poppins', sans-serif;
+            background: #121212;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            color: #e0e0e0;
         }
 
         .container {
-            background: white;
+            background: #1e1e1e;
             border-radius: 25px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             width: 100%;
             max-width: 400px;
             overflow: hidden;
             position: relative;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            height: 95vh;
+            max-height: 800px;
         }
 
         .header {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #3a1c71 0%, #d76d77 50%, #ffaf7b 100%);
             padding: 30px 20px;
             text-align: center;
             color: white;
+            position: relative;
+            flex-shrink: 0;
         }
 
         .greeting {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
 
         .subtitle {
@@ -58,16 +69,17 @@
         .avatar {
             width: 120px;
             height: 120px;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #ffaf7b 0%, #d76d77 100%);
             border-radius: 50%;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
             animation: gentle-pulse 3s ease-in-out infinite;
             position: relative;
             overflow: hidden;
+            border: 3px solid #ffaf7b;
         }
 
         .avatar::before {
@@ -77,7 +89,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3) 0%, transparent 50%);
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 50%);
             border-radius: 50%;
         }
 
@@ -91,46 +103,65 @@
             position: absolute;
             bottom: 10px;
             right: 10px;
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             background: #4CAF50;
             border-radius: 50%;
-            border: 3px solid white;
+            border: 3px solid #1e1e1e;
             animation: blink 2s ease-in-out infinite;
         }
 
         .chat-area {
             padding: 20px;
-            min-height: 300px;
-            max-height: 400px;
+            flex-grow: 1;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        /* Custom scrollbar for chat area */
+        .chat-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-area::-webkit-scrollbar-track {
+            background: #2b2b2b;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 10px;
+            border: 2px solid #2b2b2b;
         }
 
         .message {
-            margin-bottom: 15px;
             padding: 12px 16px;
             border-radius: 18px;
             max-width: 85%;
             word-wrap: break-word;
             animation: fadeIn 0.3s ease-out;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .user-message {
-            background: #007AFF;
+            background: #337ab7;
             color: white;
             margin-left: auto;
             text-align: right;
         }
 
         .assistant-message {
-            background: #f0f0f0;
-            color: #333;
+            background: #2b2b2b;
+            color: #e0e0e0;
             margin-right: auto;
+            border: 1px solid #333;
         }
 
         .input-area {
             padding: 20px;
-            border-top: 1px solid #eee;
+            border-top: 1px solid #333;
+            flex-shrink: 0;
         }
 
         .input-container {
@@ -142,15 +173,22 @@
         .message-input {
             flex: 1;
             padding: 12px 16px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #333;
             border-radius: 25px;
             font-size: 16px;
             outline: none;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: #2b2b2b;
+            color: #e0e0e0;
+        }
+
+        .message-input::placeholder {
+            color: #888;
         }
 
         .message-input:focus {
-            border-color: #007AFF;
+            border-color: #ffaf7b;
+            box-shadow: 0 0 0 3px rgba(255, 175, 123, 0.3);
         }
 
         .send-btn, .voice-btn, .lang-btn {
@@ -158,7 +196,7 @@
             height: 45px;
             border: none;
             border-radius: 50%;
-            background: #007AFF;
+            background: #3a1c71;
             color: white;
             cursor: pointer;
             display: flex;
@@ -166,15 +204,16 @@
             justify-content: center;
             transition: all 0.3s;
             font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         .send-btn:hover, .voice-btn:hover, .lang-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(0,122,255,0.3);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         .voice-btn {
-            background: #34C759;
+            background: #4CAF50;
         }
 
         .voice-btn.recording {
@@ -183,7 +222,7 @@
         }
 
         .lang-btn {
-            background: #FF9500;
+            background: #d76d77;
             font-size: 12px;
             font-weight: bold;
         }
@@ -194,20 +233,23 @@
             flex-wrap: wrap;
             gap: 8px;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .quick-btn {
             padding: 8px 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
+            background: #2b2b2b;
+            color: #e0e0e0;
+            border: 1px solid #444;
             border-radius: 20px;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .quick-btn:hover {
+            background: #333;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
@@ -215,10 +257,11 @@
         .typing-indicator {
             display: none;
             padding: 10px 16px;
-            background: #f0f0f0;
+            background: #2b2b2b;
             border-radius: 18px;
             margin-bottom: 15px;
             max-width: 85%;
+            align-self: flex-start;
         }
 
         .typing-dots {
@@ -279,10 +322,20 @@
             font-weight: bold;
         }
 
+        /* Responsive adjustments for smaller screens */
         @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
             .container {
-                margin: 10px;
-                border-radius: 20px;
+                border-radius: 15px;
+                height: 100vh;
+                max-height: none;
+            }
+
+            .header {
+                padding: 20px 15px;
             }
             
             .greeting {
@@ -290,12 +343,41 @@
             }
             
             .avatar {
-                width: 100px;
-                height: 100px;
+                width: 90px;
+                height: 90px;
             }
             
             .avatar .face {
-                font-size: 35px;
+                font-size: 30px;
+            }
+
+            .chat-area {
+                padding: 15px;
+            }
+
+            .input-area {
+                padding: 15px;
+            }
+
+            .message-input {
+                padding: 10px 14px;
+                font-size: 14px;
+            }
+
+            .send-btn, .voice-btn, .lang-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+
+            .quick-actions {
+                padding: 0 15px 15px;
+                gap: 6px;
+            }
+
+            .quick-btn {
+                padding: 6px 12px;
+                font-size: 12px;
             }
         }
     </style>
@@ -304,7 +386,7 @@
     <div class="container">
         <div class="header">
             <div class="language-indicator" id="langIndicator">EN</div>
-            <div class="greeting" id="greeting">नमस्ते मित्र!</div>
+            <div class="greeting" id="greeting">नमस्ते एमिकस!</div>
             <div class="subtitle" id="subtitle">आपका डिजिटल साथी</div>
             
             <div class="avatar-container">
@@ -317,7 +399,7 @@
 
         <div class="chat-area" id="chatArea">
             <div class="message assistant-message">
-                नमस्ते! मैं मित्र हूँ, आपका डिजिटल साथी। मैं यहाँ आपकी मदद करने और आपसे बात करने के लिए हूँ। आप मुझसे कुछ भी पूछ सकते हैं! 😊
+                नमस्ते! मैं एमिकस हूँ, आपका डिजिटल साथी। मैं यहाँ आपकी मदद करने और आपसे बात करने के लिए हूँ। आप मुझसे कुछ भी पूछ सकते हैं! 😊
             </div>
         </div>
 
@@ -357,7 +439,7 @@
                 code: 'hi',
                 name: 'Hindi',
                 indicator: 'हि',
-                greeting: 'नमस्ते मित्र!',
+                greeting: 'नमस्ते एमिकस!',
                 subtitle: 'आपका डिजिटल साथी',
                 placeholder: 'यहाँ टाइप करें...',
                 quickActions: [
@@ -371,7 +453,7 @@
                 code: 'en',
                 name: 'English',
                 indicator: 'EN',
-                greeting: 'Hello Friend!',
+                greeting: 'Hello Amicus!',
                 subtitle: 'Your Digital Companion',
                 placeholder: 'Type here...',
                 quickActions: [
@@ -472,7 +554,7 @@
 
         // System prompts for different languages
         const systemPrompts = {
-            hi: `आप एक दयालु और सहायक डिजिटल साथी हैं जो overthinking के रोगियों के साथ बातचीत करते हैं। आपका नाम "मित्र" है। आपको निम्नलिखित बातों का ध्यान रखना है:
+            hi: `आप एक दयालु और सहायक डिजिटल साथी हैं जो overthinking के रोगियों के साथ बातचीत करते हैं। आपका नाम "एमिकस" है। आपको निम्नलिखित बातों का ध्यान रखना है:
 
 1. हमेशा सरल, स्पष्ट और छोटे वाक्यों में उत्तर दें।
 
@@ -610,7 +692,7 @@ Every response should be friendly, warm and filled with optimism.`
 
         // Show typing indicator
         function showTypingIndicator() {
-            document.getElementById('typingIndicator').style.display = 'block';
+            document.getElementById('typingIndicator').style.display = 'flex';
             document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
         }
 
