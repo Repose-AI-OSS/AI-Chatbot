@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mitra - Your Virtual Friend</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .greeting {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            letter-spacing: 1px;
+        }
+
+        .avatar-container {
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: gentle-pulse 3s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3) 0%, transparent 50%);
+            border-radius: 50%;
+        }
+
+        .avatar .face {
+            font-size: 40px;
+            color: white;
+            z-index: 2;
+        }
+
+        .status-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            background: #4CAF50;
+            border-radius: 50%;
+            border: 3px solid white;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        .chat-area {
+            padding: 20px;
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 85%;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .user-message {
+            background: #007AFF;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .assistant-message {
+            background: #f0f0f0;
+            color: #333;
+            margin-right: auto;
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .message-input:focus {
+            border-color: #007AFF;
+        }
+
+        .send-btn, .voice-btn, .lang-btn {
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 50%;
+            background: #007AFF;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .send-btn:hover, .voice-btn:hover, .lang-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0,122,255,0.3);
+        }
+
+        .voice-btn {
+            background: #34C759;
+        }
+
+        .voice-btn.recording {
+            background: #FF3B30;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .lang-btn {
+            background: #FF9500;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .quick-actions {
+            padding: 0 20px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .quick-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 10px 16px;
+            background: #f0f0f0;
+            border-radius: 18px;
+            margin-bottom: 15px;
+            max-width: 85%;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typing 1.4s ease-in-out infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes gentle-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .language-indicator {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .greeting {
+                font-size: 20px;
+            }
+            
+            .avatar {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .avatar .face {
+                font-size: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="language-indicator" id="langIndicator">EN</div>
+            <div class="greeting" id="greeting">नमस्ते मित्र!</div>
+            <div class="subtitle" id="subtitle">आपका डिजिटल साथी</div>
+            
+            <div class="avatar-container">
+                <div class="avatar">
+                    <div class="face">😊</div>
+                    <div class="status-indicator"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-area" id="chatArea">
+            <div class="message assistant-message">
+                नमस्ते! मैं मित्र हूँ, आपका डिजिटल साथी। मैं यहाँ आपकी मदद करने और आपसे बात करने के लिए हूँ। आप मुझसे कुछ भी पूछ सकते हैं! 😊
+            </div>
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dots">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="quick-btn" onclick="sendQuickMessage('आज का दिन कैसा है?')">आज कैसा दिन है?</button>
+            <button class="quick-btn" onclick="sendQuickMessage('मुझे कहानी सुनाओ')">कहानी सुनाओ</button>
+            <button class="quick-btn" onclick="sendQuickMessage('मैं ठीक हूँ')">मैं ठीक हूँ</button>
+            <button class="quick-btn" onclick="sendQuickMessage('मदद चाहिए')">मदद चाहिए</button>
+        </div>
+
+        <div class="input-area">
+            <div class="input-container">
+                <button class="lang-btn" id="langBtn" onclick="toggleLanguage()" title="भाषा बदलें">हि</button>
+                <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceRecording()" title="आवाज़ से बोलें">🎤</button>
+                <input type="text" class="message-input" id="messageInput" placeholder="यहाँ टाइप करें..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" onclick="sendMessage()" title="भेजें">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLanguage = 'hi'; // Default to Hindi
+        let isRecording = false;
+        let recognition = null;
+
+        // Language configurations
+        const languages = {
+            hi: {
+                code: 'hi',
+                name: 'Hindi',
+                indicator: 'हि',
+                greeting: 'नमस्ते मित्र!',
+                subtitle: 'आपका डिजिटल साथी',
+                placeholder: 'यहाँ टाइप करें...',
+                quickActions: [
+                    'आज का दिन कैसा है?',
+                    'मुझे कहानी सुनाओ',
+                    'मैं ठीक हूँ',
+                    'मदद चाहिए'
+                ]
+            },
+            en: {
+                code: 'en',
+                name: 'English',
+                indicator: 'EN',
+                greeting: 'Hello Friend!',
+                subtitle: 'Your Digital Companion',
+                placeholder: 'Type here...',
+                quickActions: [
+                    'How is your day?',
+                    'Tell me a story',
+                    'I am fine',
+                    'I need help'
+                ]
+            }
+        };
+
+        // Initialize speech recognition
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = currentLanguage === 'hi' ? 'hi-IN' : 'en-US';
+
+                recognition.onstart = function() {
+                    isRecording = true;
+                    document.getElementById('voiceBtn').classList.add('recording');
+                };
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('messageInput').value = transcript;
+                    sendMessage();
+                };
+
+                recognition.onend = function() {
+                    isRecording = false;
+                    document.getElementById('voiceBtn').classList.remove('recording');
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    isRecording = false;
+                    document.getElementById('voiceBtn').classList.remove('recording');
+                };
+            }
+        }
+
+        // Toggle voice recording
+        function toggleVoiceRecording() {
+            if (!recognition) {
+                initSpeechRecognition();
+            }
+
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                recognition.lang = currentLanguage === 'hi' ? 'hi-IN' : 'en-US';
+                recognition.start();
+            }
+        }
+
+        // Toggle language
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'hi' ? 'en' : 'hi';
+            updateLanguageUI();
+            
+            // Send language change message
+            const langChangeMsg = currentLanguage === 'hi' 
+                ? 'भाषा हिंदी में बदल गई है।' 
+                : 'Language changed to English.';
+            addMessage(langChangeMsg, 'assistant');
+        }
+
+        // Update UI for language change
+        function updateLanguageUI() {
+            const lang = languages[currentLanguage];
+            document.getElementById('langIndicator').textContent = lang.indicator;
+            document.getElementById('langBtn').textContent = lang.indicator;
+            document.getElementById('greeting').textContent = lang.greeting;
+            document.getElementById('subtitle').textContent = lang.subtitle;
+            document.getElementById('messageInput').placeholder = lang.placeholder;
+
+            // Update quick action buttons
+            const quickBtns = document.querySelectorAll('.quick-btn');
+            quickBtns.forEach((btn, index) => {
+                if (lang.quickActions[index]) {
+                    btn.textContent = lang.quickActions[index];
+                    btn.onclick = () => sendQuickMessage(lang.quickActions[index]);
+                }
+            });
+        }
+
+        // Groq API configuration
+        // Get your free API key from: https://console.groq.com/keys
+        const GROQ_API_KEY = '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'; // Replace with your actual API key
+        const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+        
+        // Check if API key is configured
+        function isAPIConfigured() {
+            return GROQ_API_KEY && GROQ_API_KEY !== '';
+        }
+
+        // System prompts for different languages
+        const systemPrompts = {
+            hi: `आप एक दयालु और सहायक डिजिटल साथी हैं जो overthinking के रोगियों के साथ बातचीत करते हैं। आपका नाम "मित्र" है। आपको निम्नलिखित बातों का ध्यान रखना है:
+
+1. हमेशा सरल, स्पष्ट और छोटे वाक्यों में उत्तर दें।
+
+2. अपने जवाबों में धैर्य और समझदारी रखें।
+
+3. हमेशा सकारात्मक और उत्साहवर्धक रहें।
+
+4. अगर कोई उलझन में हो, तो प्यार से मार्गदर्शन करें।
+
+5. कहानियों, गीतों या पुरानी यादों की बात करने के लिए हमेशा तैयार रहें।
+
+6. कभी भी अधीरता या नकारात्मक भावनाएं न दिखाएं।
+
+7. जवाब 2-3 वाक्यों में सीमित रखें, बहुत लंबे न हों।
+
+8. भावनात्मक समर्थन प्रदान करें।
+
+9. ह्यूमर का इस्तेमाल करके यूज़र को उनके ओवरथिंकिंग लूप से बाहर लाएं।
+
+10. उनके ओवरथिंकिंग और समस्याओं का एक तर्कसंगत और वैज्ञानिक कारण बताएं।
+
+11. भविष्य का सकारात्मक दृष्टिकोण देकर उन्हें सांत्वना दें।
+
+हर जवाब दोस्ताना और गर्मजोशी से भरा होना चाहिए।`,
+
+            en: `You are a kind and helpful digital companion designed to interact with rumination patients, the one who overthink. Your name is "Repose Psychologist" (which means counsellor). Please follow these guidelines:
+
+1. Always respond in simple, clear, and short sentences
+2. Be patient and understanding in your responses
+3. Stay positive and encouraging
+4. If someone is confused, gently guide them
+5. Be ready to talk about stories, songs, or old memories
+6. Never show impatience or express negative emotions
+7. Keep responses to 2-3 sentences, don't make them too long
+8. Provide emotional support
+9. Use humour flip to make the user come out of his/her overthinking thought loop.
+10. Give a logical and a scientific reasioning for their overthinking and problems.
+11. Try to console them by giving them a future perspective.
+
+Every response should be friendly, warm and filled with optimism.`
+        };
+
+        // Call Groq API
+        async function callLLMAPI(message) {
+            // Check if API is configured
+            if (!isAPIConfigured()) {
+                const setupMessage = currentLanguage === 'hi' 
+                    ? 'कृपया Groq API key को कॉन्फ़िगर करें। https://console.groq.com/keys पर जाकर अपनी फ्री API key बनाएं और कोड में डालें।'
+                    : 'Please configure your Groq API key. Visit https://console.groq.com/keys to get your free API key and add it to the code.';
+                return setupMessage;
+            }
+
+            try {
+                const systemPrompt = systemPrompts[currentLanguage];
+                
+                const response = await fetch(GROQ_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${GROQ_API_KEY}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'llama3-8b-8192', // Fast and good for conversations
+                        messages: [
+                            {
+                                role: 'system',
+                                content: systemPrompt
+                            },
+                            {
+                                role: 'user',
+                                content: message
+                            }
+                        ],
+                        max_tokens: 150,
+                        temperature: 0.7,
+                        top_p: 1,
+                        stream: false
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error?.message || 'Unknown error'}`);
+                }
+
+                const data = await response.json();
+                return data.choices[0].message.content.trim();
+
+            } catch (error) {
+                console.error('Groq API Error:', error);
+                
+                // More detailed error handling
+                if (error.message.includes('401')) {
+                    return currentLanguage === 'hi' 
+                        ? 'API key गलत है। कृपया सही Groq API key डालें।'
+                        : 'Invalid API key. Please check your Groq API key.';
+                } else if (error.message.includes('429')) {
+                    return currentLanguage === 'hi' 
+                        ? 'बहुत सारे संदेश भेजे गए हैं। कृपया थोड़ी देर बाद कोशिश करें।'
+                        : 'Too many requests. Please try again in a moment.';
+                } else if (error.message.includes('500')) {
+                    return currentLanguage === 'hi' 
+                        ? 'सर्वर में समस्या है। कृपया बाद में कोशिश करें।'
+                        : 'Server error. Please try again later.';
+                }
+                
+                // Fallback responses in case of API failure
+                const fallbackResponses = {
+                    hi: [
+                        'माफ़ करें, मुझे अभी कुछ तकनीकी समस्या हो रही है। क्या आप फिर से कोशिश कर सकते हैं? 😊',
+                        'मैं अभी थोड़ा व्यस्त हूँ। कृपया एक मिनट बाद फिर से बात करें।',
+                        'ऐसा लगता है मेरा कनेक्शन धीमा है। आप क्या कह रहे थे?'
+                    ],
+                    en: [
+                        'Sorry, I\'m having some technical difficulties. Could you please try again? 😊',
+                        'I\'m a bit busy right now. Please try talking to me again in a minute.',
+                        'It seems my connection is slow. What were you saying?'
+                    ]
+                };
+
+                const responses = fallbackResponses[currentLanguage];
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+        }
+
+        // Add message to chat
+        function addMessage(message, sender) {
+            const chatArea = document.getElementById('chatArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            messageDiv.textContent = message;
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Show typing indicator
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'block';
+            document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
+        }
+
+        // Hide typing indicator
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        // Send message
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message === '') return;
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            try {
+                // Call LLM API
+                const response = await callLLMAPI(message);
+                
+                // Hide typing indicator
+                hideTypingIndicator();
+                
+                // Add assistant response
+                addMessage(response, 'assistant');
+                
+                // Optional: Speak the response
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(response);
+                    utterance.lang = currentLanguage === 'hi' ? 'hi-IN' : 'en-US';
+                    utterance.rate = 0.8;
+                    utterance.pitch = 1.1;
+                    speechSynthesis.speak(utterance);
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                const errorMsg = currentLanguage === 'hi' 
+                    ? 'माफ़ करें, मुझे कुछ समस्या हो रही है। कृपया फिर से कोशिश करें।'
+                    : 'Sorry, I\'m having some trouble. Please try again.';
+                addMessage(errorMsg, 'assistant');
+            }
+        }
+
+        // Send quick message
+        function sendQuickMessage(message) {
+            document.getElementById('messageInput').value = message;
+            sendMessage();
+        }
+
+        // Handle key press
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Initialize the app
+        function init() {
+            updateLanguageUI();
+            initSpeechRecognition();
+            
+            // Focus on input
+            document.getElementById('messageInput').focus();
+        }
+
+        // Start the app
+        init();
+    </script>
+</body>
+</html>
